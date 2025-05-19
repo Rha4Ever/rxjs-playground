@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { Subject, ReplaySubject, scan, reduce } from 'rxjs';
 
 import { HistoryWindow } from '../shared/history-window/history-window';
+import { compileClassDebugInfo } from '@angular/compiler';
 
 @Component({
   templateUrl: './exercise-gamescore.ng.html',
@@ -23,13 +24,16 @@ export class ExerciseGamescore {
 
     /******************************/
 
-    this.score$.pipe(
-      scan((acc, item) => acc + item, 0)
-    ).subscribe(score => this.currentScore.set(score));
+    // this.score$.pipe(
+    //   scan((acc, item) => acc + item, 0)
+    // ).subscribe(score => this.currentScore.set(score));
 
     this.score$.pipe(
-      reduce((acc, item) => acc + item, 0)
-    ).subscribe(score => this.finalScore.set(score));
+      scan((acc, item) => acc + item, 0),
+    ).subscribe({
+      next: score => this.currentScore.set(score),
+      complete: () => this.finalScore.set(this.currentScore())
+    });
     
     /******************************/
 

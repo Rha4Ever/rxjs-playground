@@ -31,7 +31,8 @@ export class ExerciseCreating {
       complete: () => this.log('Complete')
     }
 
-    observable.subscribe(observer)
+    const subscription = observable.subscribe(observer)
+    subscription.unsubscribe();
 
     
     /******************************/

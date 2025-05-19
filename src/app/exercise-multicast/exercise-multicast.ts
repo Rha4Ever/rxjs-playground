@@ -1,6 +1,6 @@
 import { Component, OnDestroy, inject, signal } from '@angular/core';
 import { AsyncPipe, DecimalPipe } from '@angular/common';
-import { Subject, BehaviorSubject, ReplaySubject, Observable, share, takeUntil } from 'rxjs';
+import { Subject, BehaviorSubject, ReplaySubject, Observable, share, takeUntil, refCount, shareReplay, tap } from 'rxjs';
 
 import { MeasureValuesService } from './measure-values.service';
 import { HistoryWindow } from '../shared/history-window/history-window';
@@ -22,7 +22,12 @@ export class ExerciseMulticast implements OnDestroy {
 
   constructor() {
     /**************!!**************/
-    this.measureValues$ = this.#mvs.getValues();
+    this.measureValues$ = this.#mvs.getValues().pipe(
+      tap(console.log),
+      shareReplay({
+        refCount: true,
+        bufferSize: 1
+      }));
     /**************!!**************/
 
   }
@@ -41,3 +46,4 @@ export class ExerciseMulticast implements OnDestroy {
   }
 
 }
+
